@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="SERVICENAME-qa-tests">
+    <test name="SERVICENAME service tests">
+        <packages>
+            <package name="GROUPID.tests.service.*"/>
+        </packages>
+    </test>
+</suite>

@@ -1,0 +1,14 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>GROUPID.tests</groupId>
+        <artifactId>SERVICENAME-test-parent-pom</artifactId>
+        <version>PROJECTVERSION</version>
+        <relativePath>../SERVICENAME-test-parent-pom</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>SERVICENAME-perf-tests</artifactId>
+    <name>SERVICENAME-perf-tests</name>
+
+</project>

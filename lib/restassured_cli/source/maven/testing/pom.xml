@@ -1,0 +1,27 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- TODO: add your project parent pom here -->
+    <!--
+    <parent>
+        <groupId>com.intuit.sbg</groupId>
+        <artifactId>SBG-Parent-pom</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    -->
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>GROUPID.tests</groupId>
+    <artifactId>SERVICENAME-tests</artifactId>
+    <version>PROJECTVERSION</version>
+    <name>SERVICENAME-tests</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>SERVICENAME-test-parent-pom</module>
+        <module>SERVICENAME-test-library</module>
+        <module>SERVICENAME-service-tests</module>
+        <module>SERVICENAME-perf-tests</module>
+        <module>SERVICENAME-production-tests</module>
+    </modules>
+</project>

@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+
+begin
+  require "restassured_cli"
+  require "restassured_cli/userinterface"
+rescue LoadError
+  # if user does not have gem installed
+  puts "Detecting restassured_cli gem is not installed, fallback on local install"
+  $LOAD_PATH << __dir__ + '/../lib'
+  $LOAD_PATH << __dir__ + '/lib'
+  require "restassured_cli"
+  require "restassured_cli/userinterface"
+  puts "... Found and executing local install"
+end
+require "optparse"
+
+options = {}
+optparse = OptionParser.new do |opts|
+  options[:full] = false
+  opts.on('-f', '--full', 'full option to create sample tests') do
+    options[:full] = true
+  end
+
+  options[:projectVersion] = '1.0.0-SNAPSHOT'
+  opts.on('-p', '--projectVersion projectVersion', 'specify project version') do |version|
+    options[:projectVersion] = version
+  end
+
+  options[:jdkVersion] = '1.7'
+  opts.on('-j', '--jdk jdkVersion', 'jdk option to specify JDK version') do |jdkVersion|
+    options[:jdkVersion] = jdkVersion
+  end
+
+  opts.on('-h', '--help', 'display help') do
+    Display.help
+    exit
+  end
+end
+
+optparse.parse!
+if ARGV.length < 2
+  Display.help
+  exit
+end
+
+RestAssuredCLI::process(ARGV[0], ARGV[1], options)
