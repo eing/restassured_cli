@@ -1,9 +1,9 @@
-# restassured_cli release notes
+# restassured_cli
 ![Gem Version](https://badge.fury.io/rb/restassured_cli.png)
 
 ## About
 
-Command line utility (CLI) to generate test projects and sample tests using [RESTAssured BDD framework](https://github.com/jayway/rest-assured), a Java DSL for easy testing of REST services. Released as ruby gem at [rubygems.org](https://rubygems.org/gems/restassured_cli)
+Command line utility (CLI) to generate test projects and sample tests using [RESTAssured BDD framework](https://github.com/jayway/rest-assured), a Java DSL for easy testing of REST services. Also, released as a ruby gem at [rubygems.org](https://rubygems.org/gems/restassured_cli)
 
 ## Release notes
 

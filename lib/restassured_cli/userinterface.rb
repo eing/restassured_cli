@@ -18,16 +18,10 @@ module Display
   def Display.results
     puts "Created project for #{$serviceName} service ..."
     puts "#{$projectName}"
-    puts "          |-- #{$serviceName}-service"
-    puts "          |         |-- src/main/java/"
-    puts "          |         |-- src/test/java/"
     puts "          |-- testing"
     puts "                    |-- #{$serviceName}-perf-tests"
     puts "                    |     |-- pom.xml"
     puts "                    |     |-- jmeter/regression/"
-    puts "                    |     |-- src/main/java/#{$packageName}/tests/perf/"
-    puts "                    |     |-- src/main/resources/"
-    puts "                    |                    testng-perf.xml"
     puts "                    |-- #{$serviceName}-production-tests"
     puts "                    |     |-- pom.xml"
     puts "                    |     |-- src/main/java/#{$packageName}/tests/production/"
@@ -50,6 +44,4 @@ module Display
     puts "                    |     |--src/main/java/#{$packageName}/tests/library/"
     puts "                    |--pom.xml"
   end
-
 end
-
