@@ -54,9 +54,6 @@ smallbusiness
           └── testing
                     |── smallbusiness-perf-tests
                     |     └── jmeter/regression/
-                    |     |── src/main/java/com/intuit/samples/smallbusiness/tests/perf/
-                    |     └── src/main/resources/
-                    |                   └── testng-perf.xml
                     |── smallbusiness-production-tests
                     |     |── src/main/java/com/intuit/samples/smallbusiness/tests/production/
                     |     └── src/main/resources/
