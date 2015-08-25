@@ -127,7 +127,8 @@ c:\Ruby22-x64\bin\ruby.exe restassured_cli -p 1.0.0 -j 1.7 -f com.intuit.samples
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/eing/restassured_cli.
+For pull requests, your contributions are absolutely welcome.
+For bug reports, please use https://github.com/eing/restassured_cli/issues
 
 ## Contributors (thank you!)
 
