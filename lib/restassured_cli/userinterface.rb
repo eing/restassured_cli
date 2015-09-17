@@ -33,6 +33,7 @@ module Display
     puts "                    |     |-- src/main/java/#{$packageName}/tests/service/"
     puts "                    |     |-- src/main/java/#{$packageName}/tests/serviceintegration/"
     puts "                    |     |--src/main/resources/"
+    puts "                    |                   |-- default/"
     puts "                    |                   |-- ci/"
     puts "                    |                   |-- qa/"
     puts "                    |                   |-- e2e/"

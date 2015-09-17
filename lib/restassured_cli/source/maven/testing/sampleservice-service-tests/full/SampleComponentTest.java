@@ -6,6 +6,9 @@ import GROUPID.tests.library.schema.Phone;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.restassured.config.RestAssuredConfig;
+import com.jayway.restassured.config.XmlConfig;
+import com.jayway.restassured.path.xml.XmlPath;
 import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
@@ -20,20 +23,25 @@ import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.path.json.JsonPath.from;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,7 +62,7 @@ public class SampleComponentTest extends SampleTestBase {
      * Add stubs to WireMock server for this set of tests.
      */
     @BeforeClass
-    public void setup() {
+    public void setup() throws SOAPException, IOException {
         /**
          * Create a JSON response using JsonNodeFactory instead of hardcoding in string which is error prone.
          * {
@@ -105,6 +113,34 @@ public class SampleComponentTest extends SampleTestBase {
                                         withHeader("Content-Type", ContentType.ANY.toString()).
                                         withHeader("JSESSIONID", "AS34979870H").
                                         withStatus(200))));
+
+        // Stub response for SOAP
+        MessageFactory messageFactory = MessageFactory.newInstance();
+        SOAPMessage soapMessage = messageFactory.createMessage();
+        SOAPPart soapPart = soapMessage.getSOAPPart();
+        SOAPEnvelope envelope = soapPart.getEnvelope();
+        SOAPBody soapBody = envelope.getBody();
+        // Add namespace declarations
+        soapBody.addNamespaceDeclaration("ns2", "http://namespace2.com");
+
+        SOAPElement vendorElement = soapBody.addChildElement("Vendor", "ns2");
+        vendorElement.addChildElement("id", "ns2").addTextNode("1290");
+        vendorElement.addChildElement("name", "ns2").addTextNode("John Smith");
+        vendorElement.addChildElement("phone", "ns2").addTextNode("650-222-3333");
+
+        soapMessage.saveChanges();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        soapMessage.writeTo(out);
+        String soapMessageInText = new String(out.toByteArray());
+
+        wireMockServer.
+                givenThat(
+                        (post(urlEqualTo("/v1/vendors")).
+                                willReturn(aResponse().
+                                        withHeader("Content-Type", ContentType.XML.toString()).
+                                        withBody(soapMessageInText).
+                                        withStatus(200))));
+
         // Stub response for all other requests (setting to lowest priority)
         wireMockServer.
                 givenThat(
@@ -194,6 +230,34 @@ public class SampleComponentTest extends SampleTestBase {
     }
 
     /**
+     * Example of getting a list from response body.
+     */
+    @Test
+    public void testGetListOfAllPhones() {
+        //@formatter:off
+        Response resp = given().spec(requestSpec).get("/customers/4");
+        List<HashMap> phones = from(resp.asString()).getList("customer.phone", HashMap.class);
+        // Phones which you should be asserting on
+        for (HashMap<String, String> map : phones) {
+            logger.debug(map.toString());
+        }
+    }
+
+    /**
+     * Example of getting a list from response body using groovy closure.
+     */
+    @Test
+    public void testGetOnlyWorkPhones() {
+        //@formatter:off
+        Response resp = given().spec(requestSpec).get("/customers/4");
+        List<Map> phones = from(resp.asString()).get("customer.phone.findAll { phone-> phone.type == \"work\" }");
+        // Phones which you should be asserting on
+        for (Map map : phones) {
+            logger.debug(map.toString());
+        }
+    }
+
+    /**
      * Example of asserting an array item.
      */
     @Test
@@ -274,10 +338,10 @@ public class SampleComponentTest extends SampleTestBase {
         Construct SOAP Request Message instead of hardcoding as a string which is error prone:
         <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
             <SOAP-ENV:Header/>
-            <SOAP-ENV:Body>
-                <GetVendor>
-                    <id>1290</id>
-                </GetVendor>
+            <SOAP-ENV:Body xmlns:ns2="http://namespace2.com">
+                <n2:GetVendor>
+                    <n2:id>1290</n2:id>
+                </n2:GetVendor>
             </SOAP-ENV:Body>
         </SOAP-ENV:Envelope>
          */
@@ -287,17 +351,36 @@ public class SampleComponentTest extends SampleTestBase {
         SOAPEnvelope envelope = soapPart.getEnvelope();
         SOAPBody soapBody = envelope.getBody();
 
-        Name bodyName = envelope.createName("GetVendor");
-        SOAPBodyElement vendorElement = soapBody.addBodyElement(bodyName);
-        SOAPElement firstnameElement = vendorElement.addChildElement(envelope.createName("id"));
-        firstnameElement.addTextNode("1290");
+        // Add namespace declarations
+        soapBody.addNamespaceDeclaration("ns2", "http://namespace2.com");
+
+        SOAPElement vendorElement = soapBody.addChildElement("Vendor", "ns2");
+        vendorElement.addChildElement("id", "ns2").addTextNode("1290");
         soapMessage.saveChanges();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         soapMessage.writeTo(out);
         String soapMessageInText = new String(out.toByteArray());
+
+        /* Response stub returned from WireMock
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body xmlns:ns2="http://namespace2.com">
+                <ns2:Vendor>
+                    <ns2:id>1290</ns2:id>
+                    <ns2:name>John Smith</ns2:name>
+                    <ns2:phone>650-222-3333</ns2:phone>
+                </ns2:Vendor>
+            </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+         */
+
         //@formatter:off
-        given().
+        response = given().
+                config(RestAssuredConfig.newConfig().
+                        xmlConfig(XmlConfig.xmlConfig().
+                                namespaceAware(true).
+                                declareNamespace("ns2", "http://namespace2.com"))).
                 spec(requestSpec).
                 header("SOAPAction", "http://localhost/getVendor").
                 contentType("application/soap+xml; charset=UTF-8;").
@@ -305,8 +388,19 @@ public class SampleComponentTest extends SampleTestBase {
         when().
                 post("/v1/vendors").
         then().assertThat().
-                statusCode(200);
+                contentType(ContentType.XML).
+                statusCode(200).
+                extract().response();
         //@formatter:off
+
+        // One way to assert
+        String responseString = response.asString();
+        String vendorName = new XmlPath(responseString).getString("Envelope.Body.Vendor.name");
+        assertThat(vendorName, is("John Smith"));
+
+        // Another way to assert
+        vendorName = XmlPath.with(responseString).get("Envelope.Body.Vendor.name");
+        assertThat(vendorName, is("John Smith"));
     }
 
 }
