@@ -175,7 +175,7 @@ public class SampleComponentTest extends SampleTestBase {
     @Test
     public void testSessionFilter() {
         SessionFilter filter = new SessionFilter();
-        //@formatter:on
+        //@formatter:off
         given().
                 spec(requestSpec).
                 auth().basic("janesmith", "xx93k2m3b1").
@@ -234,7 +234,6 @@ public class SampleComponentTest extends SampleTestBase {
      */
     @Test
     public void testGetListOfAllPhones() {
-        //@formatter:off
         Response resp = given().spec(requestSpec).get("/customers/4");
         List<HashMap> phones = from(resp.asString()).getList("customer.phone", HashMap.class);
         // Phones which you should be asserting on
@@ -248,7 +247,6 @@ public class SampleComponentTest extends SampleTestBase {
      */
     @Test
     public void testGetOnlyWorkPhones() {
-        //@formatter:off
         Response resp = given().spec(requestSpec).get("/customers/4");
         List<Map> phones = from(resp.asString()).get("customer.phone.findAll { phone-> phone.type == \"work\" }");
         // Phones which you should be asserting on
@@ -391,7 +389,7 @@ public class SampleComponentTest extends SampleTestBase {
                 contentType(ContentType.XML).
                 statusCode(200).
                 extract().response();
-        //@formatter:off
+        //@formatter:on
 
         // One way to assert
         String responseString = response.asString();
