@@ -1,5 +1,6 @@
 # restassured_cli
 ![Gem Version](https://badge.fury.io/rb/restassured_cli.png)
+![Build Status](https://travis-ci.org/eing/restassured_cli.svg?branch=master)
 
 ## About
 
